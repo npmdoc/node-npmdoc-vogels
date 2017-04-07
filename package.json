@@ -1,17 +1,40 @@
 {
-    "buildNpmdoc":"vogels",
+    "author": "kai zhu <kaizhu256@gmail.com>",
+    "buildNpmdoc": "vogels",
+    "description": "api documentation for [vogels (v2.2.0)](https://github.com/ryanfitz/vogels#readme) [![npm package](https://img.shields.io/npm/v/npmdoc-vogels.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-vogels) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-vogels.svg)](https://travis-ci.org/npmdoc/node-npmdoc-vogels)",
     "devDependencies": {
-        "vogels": "*",
         "electron-lite": "kaizhu256/node-electron-lite#alpha",
-        "utility2": "kaizhu256/node-utility2#alpha"
+        "utility2": "kaizhu256/node-utility2#alpha",
+        "vogels": "*"
     },
-    "name":"npmdoc-vogels",
+    "engines": {
+        "node": ">=4.0"
+    },
+    "homepage": "https://github.com/npmdoc/node-npmdoc-vogels",
+    "keywords": [
+        "documentation",
+        "vogels"
+    ],
+    "license": "MIT",
+    "main": "lib.npmdoc_vogels.js",
+    "name": "npmdoc-vogels",
+    "nameAlias": "npmdoc_vogels",
+    "nameOriginal": "npmdoc-vogels",
+    "os": [
+        "darwin",
+        "linux"
+    ],
     "repository": {
         "type": "git",
         "url": "https://github.com/npmdoc/node-npmdoc-vogels"
     },
     "scripts": {
-        "build-ci": "utility2 shReadmeTest build_ci.sh"
+        "build-ci": "utility2 shReadmeTest build_ci.sh",
+        "env": "env",
+        "heroku-postbuild": "(set -e; npm install \"kaizhu256/node-utility2#alpha\"; utility2 shDeployHeroku)",
+        "postinstall": "if [ -f npm_scripts.sh ]; then ./npm_scripts.sh postinstall; fi",
+        "start": "(set -e; export PORT=${PORT:-8080}; utility2 start test.js)",
+        "test": "(set -e; export PORT=$(utility2 shServerPortRandom); utility2 test test.js)"
     },
     "version": "0.0.1"
 }
