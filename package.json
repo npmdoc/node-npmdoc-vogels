@@ -1,7 +1,7 @@
 {
     "author": "kai zhu <kaizhu256@gmail.com>",
     "buildNpmdoc": "vogels",
-    "description": "api documentation for [vogels (v2.2.0)](https://github.com/ryanfitz/vogels#readme) [![npm package](https://img.shields.io/npm/v/npmdoc-vogels.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-vogels) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-vogels.svg)](https://travis-ci.org/npmdoc/node-npmdoc-vogels)",
+    "description": "#### basic api documentation for  [vogels (v2.2.0)](https://github.com/ryanfitz/vogels#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-vogels.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-vogels) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-vogels.svg)](https://travis-ci.org/npmdoc/node-npmdoc-vogels)",
     "devDependencies": {
         "electron-lite": "kaizhu256/node-electron-lite#alpha",
         "utility2": "kaizhu256/node-utility2#alpha",
