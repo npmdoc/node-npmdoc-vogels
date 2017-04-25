@@ -12489,7 +12489,24 @@
     return klass.apply(this, arguments);
   }
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+vogels.dynamoDriver = internals.dynamoDriver = function (driver) {
+if(driver) {
+  internals.dynamodb = driver;
+
+  var docClient = internals.loadDocClient(driver);
+  internals.updateDynamoDBDocClientForAllModels(docClient);
+} else {
+  internals.dynamodb = internals.dynamodb || new vogels.<span class="apidocCodeKeywordSpan">AWS.DynamoDB</span>({apiVersion: &#x27
+;2012-08-10&#x27;});
+}
+
+return internals.dynamodb;
+};
+
+vogels.documentClient = internals.documentClient = function (docClient) {
+if(docClient) {
+...</pre></li>
     </ul>
 
 
@@ -13678,7 +13695,22 @@ You delete items in DynamoDB using the hashkey of model
 
   return createTables(vogels.models, options, callback);
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  AccountId : vogels.types.uuid(),
+  name : Joi.string(),
+  email : Joi.string().email(),
+  age : Joi.number(),
+}
+});
+
+vogels.<span class="apidocCodeKeywordSpan">createTables</span>({
+&#x27;example-Account&#x27;  : {readCapacity: 1, writeCapacity: 10},
+}, function (err) {
+if(err) {
+  console.log(&#x27;Error creating tables&#x27;, err);
+  process.exit(1);
+}
+...</pre></li>
     </ul>
 
 
@@ -13740,7 +13772,22 @@ schema : {
 
   return internals.docClient;
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  describe(&#x27;#createTables&#x27;, function () {
+var clock;
+
+beforeEach(function () {
+  vogels.reset();
+  // var dynamodb = helper.mockDynamoDB();
+  // vogels.dynamoDriver(dynamodb);
+  vogels.<span class="apidocCodeKeywordSpan">documentClient</span>(helper.mockDocClient());
+  clock = sinon.useFakeTimers();
+});
+
+afterEach(function () {
+  clock.restore();
+});
+...</pre></li>
     </ul>
 
 
@@ -13818,7 +13865,23 @@ Account.create({email: &#x27;foo@example.com&#x27;, name: &#x27;Foo Bar&#x27;, a
 
   return vogels.models[name] || null;
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+    } else if (config.dynamodb) {
+      table.docClient = new DocClient({ service : config.dynamodb});
+    }
+
+    return table.config;
+  };
+
+  return vogels.<span class="apidocCodeKeywordSpan">model</span>(name, Model);
+};
+
+internals.addModel = function (name, model) {
+  vogels.models[name] = model;
+
+  return vogels.models[name];
+};
+...</pre></li>
     </ul>
 
 
@@ -13902,7 +13965,16 @@ BlogPost
     <li>description and source-code<pre class="apidocCodePre">reset = function () {
   vogels.models = {};
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  options = options || {};
+
+  return createTables(vogels.models, options, callback);
+};
+
+vogels.types = Schema.types;
+
+vogels.<span class="apidocCodeKeywordSpan">reset</span>();
+...</pre></li>
     </ul>
 
 
@@ -30561,21 +30633,21 @@ return result;
   }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
+{userId: &#x27;103&#x27;, gameTitle : &#x27;Meteor Blasters&#x27;, topScore: 723, wins: 22, losses: 12 },
+{userId: &#x27;103&#x27;, gameTitle : &#x27;Starship X&#x27;, topScore: 42, wins: 4, losses: 19 },
+];
 
-  if(_.isPlainObject(hashKey)) {
-    obj[schema.hashKey] = hashKey[schema.hashKey];
+var loadSeedData = function (callback) {
+callback = callback || _.noop;
 
-    if(schema.rangeKey &#x26;&#x26; !_.isNull(hashKey[schema.rangeKey]) &#x26;&#x26; !_.isUndefined(hashKey[schema.rangeKey])) {
-obj[schema.rangeKey] = hashKey[schema.rangeKey];
-    }
-    _.<span class="apidocCodeKeywordSpan">each</span>(schema.globalIndexes, function (keys) {
-if(_.has(hashKey, keys.hashKey)){
-  obj[keys.hashKey] = hashKey[keys.hashKey];
-}
+async.<span class="apidocCodeKeywordSpan">each</span>(data, function(attrs, callback) {
+  GameScore.create(attrs,callback);
+}, callback);
+};
 
-if(_.has(hashKey, keys.rangeKey)){
-  obj[keys.rangeKey] = hashKey[keys.rangeKey];
-}
+async.series([
+async.apply(vogels.createTables.bind(vogels)),
+loadSeedData
 ...</pre></li>
     </ul>
 
@@ -31493,21 +31565,20 @@ BlogPost
   return this.indexOf(val, byteOffset, encoding) !== -1;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-    return val.toISOString();
+    releaseYear : Joi.number(),
+    tags        : vogels.types.stringSet(),
+    director    : Joi.object().keys({
+      firstName : Joi.string(),
+      lastName  : Joi.string(),
+      titles    : Joi.array()
+    }),
+    actors : Joi.array().<span class="apidocCodeKeywordSpan">includes</span>(Joi.object().keys({
+      firstName : Joi.string(),
+      lastName  : Joi.string(),
+      titles    : Joi.array()
+    }))
   }
-
-  return val;
-};
-
-internals.isFunctionOperator = function (operator) {
-  return _.<span class="apidocCodeKeywordSpan">includes</span>([&#x27;attribute_exists&#x27;,
-                     &#x27;attribute_not_exists&#x27;,
-                     &#x27;attribute_type&#x27;,
-                     &#x27;begins_with&#x27;,
-                     &#x27;contains&#x27;,
-                     &#x27;NOT contains&#x27;,
-                     &#x27;size&#x27;], operator);
-};
+});
 ...</pre></li>
     </ul>
 
@@ -31545,7 +31616,24 @@ internals.isFunctionOperator = function (operator) {
   }
   return &#x27;&#x3c;&#x27; + this.constructor.name + &#x27; &#x27; + str + &#x27;&#x3e;&#x27;;
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+};
+
+var printScanResults = function (err, data) {
+if(err) {
+  console.log(&#x27;got scan error&#x27;, err);
+} else if (data.Items) {
+  var items = _.map(data.Items, function (d) { return d.get(); });
+  console.log(&#x27;scan finished, got &#x27;, util.<span class="apidocCodeKeywordSpan">inspect</span>(items, { showHidden: false
+, depth: null }));
+} else {
+  console.log(&#x27;scan returned empty result set&#x27;);
+}
+};
+
+vogels.createTables(function (err) {
+if(err) {
+...</pre></li>
     </ul>
 
 
@@ -32093,7 +32181,24 @@ internals.isFunctionOperator = function (operator) {
     return { type: &#x27;Buffer&#x27;, data: [] };
   }
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  table.create(item, function (err, account) {
+    account.should.be.instanceof(Item);
+
+    account.get(&#x27;email&#x27;).should.equal(&#x27;test@test.com&#x27;);
+    account.get(&#x27;name&#x27;).should.equal(&#x27;Tim Test&#x27;);
+    account.get(&#x27;luckyNumbers&#x27;).should.eql([1, 2, 3]);
+
+    expect(account.<span class="apidocCodeKeywordSpan">toJSON</span>()).to.have.keys([&#x27;email&#x27;, &#x27;name&#x27;, &#x27
+;luckyNumbers&#x27;]);
+
+    done();
+  });
+});
+
+it(&#x27;should omit empty values&#x27;, function (done) {
+  var config = {
+...</pre></li>
     </ul>
 
 
@@ -33128,7 +33233,24 @@ Account.create({email: &#x27;test@example.com&#x27;, name : &#x27;Test Account&#
     <li>description and source-code<pre class="apidocCodePre">toJSON = function () {
   return _.cloneDeep(this.attrs);
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  table.create(item, function (err, account) {
+    account.should.be.instanceof(Item);
+
+    account.get(&#x27;email&#x27;).should.equal(&#x27;test@test.com&#x27;);
+    account.get(&#x27;name&#x27;).should.equal(&#x27;Tim Test&#x27;);
+    account.get(&#x27;luckyNumbers&#x27;).should.eql([1, 2, 3]);
+
+    expect(account.<span class="apidocCodeKeywordSpan">toJSON</span>()).to.have.keys([&#x27;email&#x27;, &#x27;name&#x27;, &#x27
+;luckyNumbers&#x27;]);
+
+    done();
+  });
+});
+
+it(&#x27;should omit empty values&#x27;, function (done) {
+  var config = {
+...</pre></li>
     </ul>
 
 
@@ -33634,7 +33756,24 @@ runRequestFunc(self.<span class="apidocCodeKeywordSpan">buildRequest</span>(), f
 
   return this;
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+    indexes : [{ hashKey : &#x27;name&#x27;, rangeKey : &#x27;created&#x27;, type : &#x27;local&#x27;, name : &#x27;CreatedIndex
+&#x27;}]
+  };
+
+  table.schema = new Schema(config);
+});
+
+it(&#x27;should set Consistent Read to true&#x27;, function () {
+  var query = new Query(&#x27;tim&#x27;, table, serializer).<span class="apidocCodeKeywordSpan">consistentRead</span>(true);
+  query.request.ConsistentRead.should.be.true;
+});
+
+it(&#x27;should set Consistent Read to true when passing no args&#x27;, function () {
+  var query = new Query(&#x27;tim&#x27;, table, serializer).consistentRead();
+  query.request.ConsistentRead.should.be.true;
+});
+...</pre></li>
     </ul>
 
 
@@ -35108,7 +35247,24 @@ var serialize = function (item, datatypes) {
     return result;
   }, {});
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+      foo : Joi.string(),
+      name : Joi.string(),
+    }
+  };
+
+  var s = new Schema(config);
+
+  var item = serializer.<span class="apidocCodeKeywordSpan">serializeItemForUpdate</span>(s, &#x27;PUT&#x27;, {name: &#x27;Tim Tester
+&#x27;});
+
+  item.should.eql({ name: {Action: &#x27;PUT&#x27;, Value: &#x27;Tim Tester&#x27;}});
+});
+
+it(&#x27;should serialize number attribute&#x27;, function () {
+  var config = {
+    hashKey: &#x27;foo&#x27;,
+...</pre></li>
     </ul>
 
 
@@ -35299,7 +35455,23 @@ model.log.info(&#x27;waiting for table: %s to become ACTIVE&#x27;, tableName);
 
   this.sendRequest(&#x27;deleteTable&#x27;, params, callback);
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+it(&#x27;should make delete table request&#x27;, function (done) {
+  var request = {
+    TableName: &#x27;accounts&#x27;
+  };
+
+  dynamodb.deleteTable.yields(null, {});
+
+  table.<span class="apidocCodeKeywordSpan">deleteTable</span>(function (err) {
+    expect(err).to.be.null;
+    dynamodb.deleteTable.calledWith(request).should.be.true;
+    done();
+  });
+});
+
+it(&#x27;should make delete table request without callback&#x27;, function (done) {
+...</pre></li>
     </ul>
 
 
@@ -36012,20 +36184,20 @@ var obj = {};
   return set;
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-case &#x27;DATE&#x27;:
-  return serialize.date(value);
-case &#x27;BOOL&#x27;:
-  return serialize.boolean(value);
-case &#x27;B&#x27;:
-  return serialize.binary(value);
-case &#x27;NS&#x27;:
-  return serialize.<span class="apidocCodeKeywordSpan">numberSet</span>(value);
-case &#x27;SS&#x27;:
-  return serialize.stringSet(value);
-case &#x27;BS&#x27;:
-  return serialize.binarySet(value);
-default:
-  return value;
+
+var Account = vogels.define(&#x27;Foobar&#x27;, {
+hashKey : &#x27;email&#x27;,
+schema : {
+  email   : Joi.string(),
+  name    : Joi.string(),
+  age     : Joi.number(),
+  scores  : vogels.types.<span class="apidocCodeKeywordSpan">numberSet</span>(),
+  created : Joi.date().default(Date.now),
+  list    : Joi.array(),
+  settings : {
+    nickname    : Joi.string(),
+    luckyNumber : Joi.number().min(1).default(7)
+  }
 }
 ...</pre></li>
     </ul>
@@ -36075,7 +36247,23 @@ default:
     <li>description and source-code<pre class="apidocCodePre">timeUUID = function () {
   return Joi.string().guid().default(nodeUUID.v1);
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  });
+
+  describe(&#x27;#timeUUID&#x27;, function () {
+it(&#x27;should set as TimeUUID with default v1 uuid function&#x27;, function () {
+  var config = {
+    hashKey : &#x27;id&#x27;,
+    schema : {
+      id : Schema.types.<span class="apidocCodeKeywordSpan">timeUUID</span>(),
+    }
+  };
+
+  var s = new Schema(config);
+  expect(s.applyDefaults({}).id).should.not.be.empty;
+
+});
+...</pre></li>
     </ul>
 
 

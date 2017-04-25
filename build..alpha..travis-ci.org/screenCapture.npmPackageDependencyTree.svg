@@ -13,7 +13,7 @@
 <tspan x="10" y="170">  │   └── lodash@3.5.0 </tspan>
 <tspan x="10" y="186">  ├─┬ bunyan@1.5.1 </tspan>
 <tspan x="10" y="202">  │ ├─┬ dtrace-provider@0.6.0 </tspan>
-<tspan x="10" y="218">  │ │ └── nan@2.6.1 </tspan>
+<tspan x="10" y="218">  │ │ └── nan@2.6.2 </tspan>
 <tspan x="10" y="234">  │ ├─┬ mv@2.1.1 </tspan>
 <tspan x="10" y="250">  │ │ ├─┬ mkdirp@0.5.1 </tspan>
 <tspan x="10" y="266">  │ │ │ └── minimist@0.0.8 </tspan>
